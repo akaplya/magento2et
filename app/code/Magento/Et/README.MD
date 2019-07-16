@@ -1,0 +1,1 @@
+This module is waiting for a better name. At the moment ET abbreviation can be briefly explained as the reference on the data extraction and transformation logic implemented by the module.
