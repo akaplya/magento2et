@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Et:etc/et_schema.xsd">
+    <record name="Export">
+        <field name="products" type="Product" repeated="true"
+               provider="Magento\CatalogEt\Model\Product\MainEntity"
+        />
+    </record>
+    <record name="Product">
+        <field name="product_id" type="ID"/>
+        <field name="sku" type="String" />
+        <field name="name" type="String" />
+        <field name="price_range" type="PriceRange" />
+        <field name="attributes" type="DynamicAttribute" repeated="true"
+               provider="Magento\CatalogEt\Model\Product\DynamicAttributes"
+        />
+        <field name="categories" type="String" repeated="true"
+               provider="Magento\CatalogEt\Model\Product\ProductCategories"
+        />
+    </record>
+    <record name="DynamicAttribute">
+        <field name="attribute_code" type="String"/>
+        <field name="value" type="String"/>
+    </record>
+    <record name="PriceRange">
+        <field name="minimalPirce" type="ProductPrice"/>
+        <field name="maximalPrice" type="ProductPrice"/>
+    </record>
+    <record name="ProductPrice">
+        <field name="regular_price" type="Float"/>
+        <field name="sale_price" type="Float"/>
+    </record>
+</config>
