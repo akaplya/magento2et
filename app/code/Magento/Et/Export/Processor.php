@@ -11,7 +11,6 @@ use Magento\Et\Export\Request\InfoAssembler;
 
 /**
  * Class Processor
- * @package Magento\Et\Export
  */
 class Processor
 {

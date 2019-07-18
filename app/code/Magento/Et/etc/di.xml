@@ -34,4 +34,7 @@
         </arguments>
     </type>
     <preference for="Magento\Et\Config\ConfigInterface" type="Magento\Et\Config\Config" />
+
+
+    <preference for="Magento\Et\Api\UglyExportWrapperInterface" type="Magento\Et\Export\UglyExportWrapper" />
 </config>
