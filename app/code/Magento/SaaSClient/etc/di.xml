@@ -6,6 +6,7 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="Magento\Et\Api\UglyExportWrapperInterface" type="Magento\Et\Export\UglyExportWrapper" />
+    <preference for="Magento\SaaSClient\Api\SyncFeedsInterface" type="Magento\SaaSClient\Model\SyncFeeds" />
+    <preference for="Magento\SaaSClient\Http\ClientInterface" type="Magento\SaaSClient\Http\Client\CurlClient" />
+    <preference for="Magento\SaaSClient\Http\ConverterInterface" type="Magento\SaaSClient\Http\Converter\JsonConverter" />
 </config>
-

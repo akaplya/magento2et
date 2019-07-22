@@ -56,15 +56,17 @@ class Processor
 
     /**
      * @param string $fieldName
+     * @param array $arguments
      * @return array
      */
-    public function process(string $fieldName) : array
+    public function process(string $fieldName, array $arguments = []) : array
     {
         $info = $this->infoAssembler->assembleFieldInfo($fieldName, $this->rootProfileName);
-        $snapshots = $this->extractor->extract($info);
+//        $key = base64_encode(json_encode($info->getRootNode()->getField()));
+        $snapshots = $this->extractor->extract($info, $arguments);
+//        $snapshots[$key]
         $data = $this->transformer->transform($info->getRootNode()->getField(), $snapshots);
-        return $data;
+        return
+            $data;
     }
-
-
 }

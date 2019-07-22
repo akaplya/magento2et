@@ -74,11 +74,12 @@ class Extractor
 
     /**
      * @param Info $info
+     * @param array $arguments
      * @return array
      */
-    public function extract(Info $info) : array
+    public function extract(Info $info, array $arguments = []) : array
     {
-        $data = $this->extractDataForNode($info->getRootNode(), []);
+        $data = $this->extractDataForNode($info->getRootNode(), $arguments);
         return $data;
     }
 }

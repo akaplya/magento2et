@@ -38,7 +38,7 @@ class Transformer
     private function resolveValue(array $field, $value)
     {
         if ($field['provider']) {
-            return $this->transform($field, $value);
+            return $this->toDeclaration($field, $value);
         }
         return $value;
     }
@@ -48,7 +48,22 @@ class Transformer
         return in_array($typeName, ['String', 'Int', 'Float', 'ID']);
     }
 
+    /**
+     * @param array $rootField
+     * @param array $snapshot
+     * @return array
+     */
     public function transform(array $rootField, array $snapshot) : array
+    {
+        return $this->toDeclaration($rootField, $snapshot);
+    }
+
+    /**
+     * @param array $rootField
+     * @param array $snapshot
+     * @return array
+     */
+    private function toDeclaration(array $rootField, array $snapshot) : array
     {
         $result = [];
         $key = base64_encode(json_encode($rootField));
@@ -73,20 +88,19 @@ class Transformer
                             if (isset($snapshot[$key][$i][$field['name']])) {
                                 $result[$i][$field['name']] = $this->resolveValue($field, $snapshot[$key][$i][$field['name']]);
                             } elseif ($field['provider']) {
-                                $result[$i][$field['name']] = $this->transform($field, $snapshot);
+                                $result[$i][$field['name']] = $this->toDeclaration($field, $snapshot);
                             }
                         }
                     } else {
                         if (isset($snapshot[$key][$field['name']])) {
                             $result[$field['name']] = $this->resolveValue($field, $snapshot[$key][$field['name']]);
                         } elseif ($field['provider']) {
-                            $result[$field['name']] = $this->transform($field, $snapshot);
+                            $result[$field['name']] = $this->toDeclaration($field, $snapshot);
                         }
                     }
                 }
             }
         }
         return $result;
-
     }
 }

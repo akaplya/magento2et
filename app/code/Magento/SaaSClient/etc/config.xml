@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <magentoSaaS>
+            <url>https://qa-api.magedevteam.com</url>
+            <credentials>
+                <magento-api-key>6MH18vioStUiJS1I4IkAsqmxSsW9UGLa</magento-api-key>
+            </credentials>
+        </magentoSaaS>
+    </default>
+</config>

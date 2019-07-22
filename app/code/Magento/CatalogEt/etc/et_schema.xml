@@ -8,8 +8,8 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Et:etc/et_schema.xsd">
     <record name="Export">
         <field name="products" type="Product" repeated="true"
-               provider="Magento\CatalogEt\Model\Product\MainEntity"
-        />
+               provider="Magento\CatalogEt\Model\Product\MainEntity">
+        </field>
     </record>
     <record name="Product">
         <field name="product_id" type="ID"/>
