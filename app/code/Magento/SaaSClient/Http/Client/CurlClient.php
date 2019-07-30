@@ -70,7 +70,7 @@ class CurlClient implements ClientInterface
             $headers = $this->applyContentTypeHeaderFromConverter($headers);
 
             $curl->write($method, $url, $version, $headers, $this->converter->toBody($body));
-
+            $this->logger->debug($this->converter->toBody($body));
             $result = $curl->read();
 
             if ($curl->getErrno()) {
@@ -83,7 +83,6 @@ class CurlClient implements ClientInterface
                         )
                     )
                 );
-
                 return $response;
             }
 

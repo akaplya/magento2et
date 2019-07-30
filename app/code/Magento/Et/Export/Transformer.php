@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace Magento\Et\Export;
 
 use Magento\Et\Config\ConfigInterface;
+use Magento\Et\Export\Request\Info;
 
 /**
  * Class Transformer
@@ -30,19 +31,6 @@ class Transformer
         $this->config = $config;
     }
 
-    /**
-     * @param array $field
-     * @param $value
-     * @return array
-     */
-    private function resolveValue(array $field, $value)
-    {
-        if ($field['provider']) {
-            return $this->toDeclaration($field, $value);
-        }
-        return $value;
-    }
-
     private function isScalar(string $typeName) : bool
     {
         return in_array($typeName, ['String', 'Int', 'Float', 'ID']);
@@ -53,52 +41,95 @@ class Transformer
      * @param array $snapshot
      * @return array
      */
-    public function transform(array $rootField, array $snapshot) : array
+    public function transform(Info $info, array $snapshot) : array
     {
-        return $this->toDeclaration($rootField, $snapshot);
+        $result = [];
+        $key = $this->getKey($info->getRootNode()->getField());
+        if (!isset($snapshot[$key])) {
+            return $result;
+        }
+        $data = $this->convertComplexData(
+            $info->getRootNode()->getField(), $snapshot, null);
+        return $data;
     }
 
     /**
-     * @param array $rootField
+     * @param array $field
+     * @return string
+     */
+    private function getKey(array $field) : string
+    {
+        return base64_encode(json_encode($field));
+    }
+
+    private function castToFieldType(array $field, $value) {
+        return $value;
+    }
+
+    /**
+     * @param array $row
+     * @param array $type
      * @param array $snapshot
      * @return array
      */
-    private function toDeclaration(array $rootField, array $snapshot) : array
+    private function convertComplexRow(array $row, array $type, array $snapshot) : array
     {
         $result = [];
-        $key = base64_encode(json_encode($rootField));
-        if ($this->isScalar($rootField['type'])) {
-            if (isset($snapshot[$key])) {
-                $field = $rootField;
-                $field['provider'] = null;
-                if ($rootField['repeated']) {
-                    for ($i=0; count($snapshot[$key]) > $i; $i++) {
-                        $result[$i] = $this->resolveValue($field, $snapshot[$key][$i][$rootField['name']]);
+        foreach ($type['field'] as $field) {
+            if ($field['provider'] != null) {
+                $key = $this->getKey($field);
+                if (isset($snapshot[$key])) {
+                    $index = [];
+                    foreach ($field['using'] as $key) {
+                        $index[] = [$key['field'] => $row[$key['field']]];
                     }
-                } else {
-                    $result = $this->resolveValue($field, $snapshot[$key][$rootField['name']]);
+                    $lookupReference = base64_encode(json_encode($index));
+                    $result[$field['name']] = $this->convertComplexData($field, $snapshot, $lookupReference); //todo: add Filter cond
+                }
+            } else {
+                if (isset($row[$field['name']])) {
+                    $result[$field['name']] = $this->castToFieldType($field, $row[$field['name']]);
                 }
             }
+        }
+        return $result;
+    }
+
+    /**
+     * TODO: rename to covert data that has type and provider
+     *
+     * @param array $field
+     * @param array $snapshot
+     * @param string $lookup
+     * @return array
+     */
+    private function convertComplexData(array $field, array $snapshot, ?string $lookup) : ?array
+    {
+        if ($lookup) {
+            if (!isset($snapshot[$this->getKey($field)][$lookup])) {
+                return null;
+            }
+            $data = $snapshot[$this->getKey($field)][$lookup];    
         } else {
-            $type = $this->config->get($rootField['type']);
-            if (isset($snapshot[$key])) {
-                foreach ($type['field'] as $field) {
-                    if ($rootField['repeated']) {
-                        for ($i=0; count($snapshot[$key]) > $i; $i++) {
-                            if (isset($snapshot[$key][$i][$field['name']])) {
-                                $result[$i][$field['name']] = $this->resolveValue($field, $snapshot[$key][$i][$field['name']]);
-                            } elseif ($field['provider']) {
-                                $result[$i][$field['name']] = $this->toDeclaration($field, $snapshot);
-                            }
-                        }
-                    } else {
-                        if (isset($snapshot[$key][$field['name']])) {
-                            $result[$field['name']] = $this->resolveValue($field, $snapshot[$key][$field['name']]);
-                        } elseif ($field['provider']) {
-                            $result[$field['name']] = $this->toDeclaration($field, $snapshot);
-                        }
-                    }
+            $data = $snapshot[$this->getKey($field)];
+        }
+        $result = null;
+        if ($this->isScalar($field['type'])) {
+            if ($field['repeated']) {
+                for ($i=0; $i < count($data); $i++) {
+                    $result[$i] = $this->castToFieldType($field, $data[$i]) ;
                 }
+            } else {
+                $result = $this->castToFieldType($field, $data[$i]);
+            }
+        } else {
+            $type = $this->config->get($field['type']);
+            if ($field['repeated']) {
+                for ($i=0; $i < count($data); $i++) {
+                    $result[$i] = $this->convertComplexRow($data[$i], $type, $snapshot) ;
+                }
+            } else {
+                $result = $this->convertComplexRow($data, $type, $snapshot);
             }
         }
         return $result;

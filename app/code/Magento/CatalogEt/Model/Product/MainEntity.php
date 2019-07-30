@@ -43,7 +43,13 @@ class MainEntity
                 [
                     'product_id' => 't.entity_id',
                     'sku' => 't.sku'
-                ]);
-        return $connection->fetchAll($select->limit(1));
+                ])
+            ->joinLeft(
+                ['a_name' => $this->resourceConnection->getTableName('catalog_product_entity_varchar')],
+                'a_name.entity_id = t.entity_id AND store_id = 0 AND attribute_id = 73',
+                ['name' => 'a_name.value']
+            )
+        ;
+        return $connection->fetchAll($select->limit(1000));
     }
 }

@@ -9,13 +9,16 @@
     <record name="Export">
         <field name="products" type="Product" repeated="true"
                provider="Magento\CatalogEt\Model\Product\MainEntity">
+            <using field="product_id" />
         </field>
     </record>
     <record name="Product">
         <field name="product_id" type="ID"/>
         <field name="sku" type="String" />
         <field name="name" type="String" />
-        <field name="price_range" type="PriceRange" />
+        <field name="price_range" type="PriceRange"
+               provider="Magento\CatalogEt\Model\Product\ProductPrices"
+        />
         <field name="attributes" type="DynamicAttribute" repeated="true"
                provider="Magento\CatalogEt\Model\Product\DynamicAttributes"
         />
@@ -28,7 +31,7 @@
         <field name="value" type="String"/>
     </record>
     <record name="PriceRange">
-        <field name="minimalPirce" type="ProductPrice"/>
+        <field name="minimalPrice" type="ProductPrice"/>
         <field name="maximalPrice" type="ProductPrice"/>
     </record>
     <record name="ProductPrice">

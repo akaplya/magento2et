@@ -90,6 +90,7 @@ class Converter implements ConverterInterface
                 }
                 $records[$queryData['name']]['field'][$field['name']] = $field;
             }
+            $records[$queryData['name']]['ID'] = $idField;
         }
         return $records;
     }

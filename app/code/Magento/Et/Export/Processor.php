@@ -62,11 +62,8 @@ class Processor
     public function process(string $fieldName, array $arguments = []) : array
     {
         $info = $this->infoAssembler->assembleFieldInfo($fieldName, $this->rootProfileName);
-//        $key = base64_encode(json_encode($info->getRootNode()->getField()));
         $snapshots = $this->extractor->extract($info, $arguments);
-//        $snapshots[$key]
-        $data = $this->transformer->transform($info->getRootNode()->getField(), $snapshots);
-        return
-            $data;
+        $data = $this->transformer->transform($info, $snapshots);
+        return $data;
     }
 }
